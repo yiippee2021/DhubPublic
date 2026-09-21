@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         message
       ];
       var body = encodeURIComponent(bodyLines.join("\n"));
-      window.location.href = "mailto:info@dhubgroup.in?subject=" + subject + "&body=" + body;
+      window.location.href = "mailto:admin@dhubgroup.in?subject=" + subject + "&body=" + body;
 
       status.className = "form-status success";
       status.textContent = "Thank you. Your default e-mail application will now open so you may send your enquiry to us.";
