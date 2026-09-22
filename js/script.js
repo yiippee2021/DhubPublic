@@ -1,5 +1,9 @@
 // D-HUB Group — shared behaviour
 
+// Set this to the URL where php/send-mail.php is hosted (a PHP-capable
+// server — GitHub Pages cannot run it). e.g. "https://mail.dhubgroup.in/send-mail.php"
+var CONTACT_FORM_ENDPOINT = "https://dhubgroup.in/send-mail.php";
+
 document.addEventListener("DOMContentLoaded", function () {
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.querySelector(".main-nav");
@@ -21,6 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var form = document.querySelector("#contact-form");
   if (form) {
+    var submitBtn = form.querySelector('button[type="submit"]');
+
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var status = document.querySelector("#form-status");
@@ -34,21 +40,53 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      var subject = encodeURIComponent("Enquiry from D-HUB Group website — " + name);
-      var bodyLines = [
-        "Name: " + name,
-        "Email: " + email,
-        "Phone: " + (form.querySelector("#phone").value.trim() || "Not provided"),
-        "Service of interest: " + (form.querySelector("#service").value || "Not specified"),
-        "",
-        message
-      ];
-      var body = encodeURIComponent(bodyLines.join("\n"));
-      window.location.href = "mailto:admin@dhubgroup.in?subject=" + subject + "&body=" + body;
+      var payload = {
+        name: name,
+        email: email,
+        phone: form.querySelector("#phone").value.trim(),
+        service: form.querySelector("#service").value,
+        society: form.querySelector("#society").value.trim(),
+        message: message,
+        website: form.querySelector("#website") ? form.querySelector("#website").value : ""
+      };
 
-      status.className = "form-status success";
-      status.textContent = "Thank you. Your default e-mail application will now open so you may send your enquiry to us.";
-      form.reset();
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending…";
+      }
+      status.className = "form-status";
+      status.textContent = "";
+
+      fetch(CONTACT_FORM_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json().catch(function () { return {}; }).then(function (data) {
+            return { ok: response.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          if (result.ok && result.data.success) {
+            status.className = "form-status success";
+            status.textContent = result.data.message || "Thank you. Your enquiry has been sent — we will be in touch shortly.";
+            form.reset();
+          } else {
+            status.className = "form-status error";
+            status.textContent = result.data.message || "Sorry, something went wrong while sending your enquiry. Please try again or contact us by phone.";
+          }
+        })
+        .catch(function () {
+          status.className = "form-status error";
+          status.textContent = "Sorry, we could not reach the server. Please try again or contact us by phone.";
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Send Enquiry";
+          }
+        });
     });
   }
 });
