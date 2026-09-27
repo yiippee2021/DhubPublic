@@ -1,8 +1,8 @@
 // D-HUB Group — shared behaviour
 
-// Set this to the URL where php/send-mail.php is hosted (a PHP-capable
-// server — GitHub Pages cannot run it). e.g. "https://mail.dhubgroup.in/send-mail.php"
-var CONTACT_FORM_ENDPOINT = "https://dhubgroup.in/send-mail.php";
+// Relative path works because the whole site (including php/send-mail.php)
+// is hosted together on Hostinger — same origin, no CORS needed.
+var CONTACT_FORM_ENDPOINT = "/php/send-mail.php";
 
 document.addEventListener("DOMContentLoaded", function () {
   var toggle = document.querySelector(".nav-toggle");
