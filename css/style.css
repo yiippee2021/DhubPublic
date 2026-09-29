@@ -106,7 +106,7 @@ a:hover { text-decoration: underline; }
 .main-nav ul {
   list-style: none;
   display: flex;
-  gap: 28px;
+  gap: 22px;
   margin: 0;
   padding: 0;
 }
@@ -193,6 +193,24 @@ a:hover { text-decoration: underline; }
 
 .hero-card ul { padding-left: 20px; margin: 0; }
 .hero-card li { margin-bottom: 10px; font-size: 14.5px; color: #eaf1f5; }
+
+.hero-path-list { display: grid; gap: 12px; }
+.hero-path {
+  display: block;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.hero-path:hover {
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-2px);
+  border-color: rgba(200, 149, 46, 0.5);
+  text-decoration: none;
+}
+.hero-path strong { display: block; color: var(--colour-accent-light); font-size: 14.5px; margin-bottom: 4px; }
+.hero-path span { display: block; font-size: 13px; color: #dce6ec; }
 
 /* Buttons */
 .btn {
