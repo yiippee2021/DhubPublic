@@ -13,7 +13,7 @@
 <meta property="og:description" content="Ask D-HUB Group's Society Help Desk a process question on deemed conveyance, redevelopment or AGM/SGM procedure. Process support only — not legal advice.">
 <meta property="og:image" content="https://dhubgroup.in/assets/logo.png">
 <link rel="icon" href="assets/logo.png" type="image/png">
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
 
@@ -32,6 +32,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="services.html">For Housing Societies</a></li>
         <li><a href="builders.html">For Builders &amp; Developers</a></li>
+        <li><a href="help-desk.html" class="active">Society Help Desk</a></li>
         <li><a href="contact.html">Contact Us</a></li>
       </ul>
     </nav>
@@ -80,11 +81,27 @@
         <div class="form-row">
           <div class="form-group">
             <label for="hd-role">Your role</label>
-            <input type="text" id="hd-role" name="role" placeholder="Secretary">
+            <select id="hd-role" name="role">
+              <option value="">Select your role</option>
+              <option value="Chairman">Chairman</option>
+              <option value="Secretary">Secretary</option>
+              <option value="Treasurer">Treasurer</option>
+              <option value="Managing Committee Member">Managing Committee Member</option>
+              <option value="Member">Member</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="hd-topic">Topic</label>
-            <input type="text" id="hd-topic" name="topic" placeholder="Deemed Conveyance">
+            <select id="hd-topic" name="topic">
+              <option value="">Select a topic</option>
+              <option value="Deemed Conveyance">Deemed Conveyance</option>
+              <option value="Redevelopment">Redevelopment</option>
+              <option value="AGM / SGM Procedure">AGM / SGM Procedure</option>
+              <option value="MahaRERA Compliance">MahaRERA Compliance</option>
+              <option value="Documentation Request">Documentation Request</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
         </div>
 
@@ -135,7 +152,7 @@
       <h2 style="font-size:22px;">Reference Resources</h2>
     </div>
     <div class="tool-grid">
-      <a class="tool-card" href="mailto:admin@dhubgroup.in?subject=Request%20latest%20Housing%20%26%20Property%20Times%20edition">
+      <a class="tool-card" href="http://hptimes.news" target="_blank" rel="noopener">
         <h4>This week's paper</h4>
         <p>Latest edition for Societies</p>
       </a>
