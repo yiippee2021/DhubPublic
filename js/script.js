@@ -99,4 +99,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
+
+  // Soft scroll-reveal for cards and sections as they enter the viewport.
+  if ("IntersectionObserver" in window) {
+    var revealTargets = document.querySelectorAll(
+      ".card, .team-card, .entity-card, .tool-card, .service-detail, .badge, .resource-section, .hero-card"
+    );
+    revealTargets.forEach(function (el) {
+      el.classList.add("reveal-init");
+    });
+    var revealObserver = new IntersectionObserver(
+      function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    revealTargets.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+  }
 });
