@@ -4,13 +4,13 @@
 // is hosted together on Hostinger — same origin, no CORS needed.
 var CONTACT_FORM_ENDPOINT = "/php/send-mail.php";
 
-function goBack(event) {
+function goBack(event, fallbackUrl) {
   event.preventDefault();
   var cameFromSameSite = document.referrer && document.referrer.indexOf(location.origin) === 0;
   if (cameFromSameSite && window.history.length > 1) {
     window.history.back();
   } else {
-    window.location.href = "index.html";
+    window.location.href = fallbackUrl || "index.html";
   }
 }
 
