@@ -634,6 +634,46 @@ section { padding: 64px 0; }
 .lang-panel.active { display: block; }
 .lang-panel[dir="rtl"] { text-align: right; }
 .lang-panel[dir="rtl"] h3 { text-align: right; }
+
+.lang-share-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 26px;
+  padding-top: 2px;
+}
+.lang-share-label {
+  font-size: 12.5px;
+  color: var(--colour-muted);
+  margin-right: 2px;
+}
+.lang-copy-btn {
+  appearance: none;
+  border: 1px dashed var(--colour-border);
+  background: transparent;
+  color: var(--colour-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 90px;
+}
+.lang-copy-btn:hover { border-color: var(--colour-accent); color: var(--colour-primary-dark); background: rgba(200, 149, 46, 0.08); }
+.lang-copy-btn.copied {
+  border-style: solid;
+  border-color: #2e7d32;
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+}
+@media (max-width: 640px) {
+  .lang-share-row { gap: 6px; }
+  .lang-share-label { width: 100%; margin: 0 0 2px; }
+  .lang-copy-btn { font-size: 11.5px; padding: 5px 9px; min-width: 0; }
+}
 .urdu-font, .urdu-font h2, .urdu-font h3, .urdu-font p {
   font-family: "Gulzar", "Noto Nastaliq Urdu", serif;
 }

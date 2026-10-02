@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gulzar&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css?v=11">
+<link rel="stylesheet" href="../css/style.css?v=12">
 </head>
 <body>
 
@@ -66,6 +66,15 @@
       <button class="lang-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-hi" data-lang="hi"><span class="flag">&#x1F1EE;&#x1F1F3;</span> हिंदी</button>
       <button class="lang-tab lang-tab-ur" type="button" role="tab" aria-selected="false" aria-controls="panel-ur" data-lang="ur"><span class="flag">&#x1F1EE;&#x1F1F3;</span> <span class="urdu-font">اردو</span></button>
       <button class="lang-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-ru" data-lang="ru"><span class="flag">&#x1F1EE;&#x1F1F3;</span> Roman Urdu</button>
+    </div>
+
+    <div class="lang-share-row">
+      <span class="lang-share-label">Share a language directly:</span>
+      <button class="lang-copy-btn" type="button" data-lang="en" title="Copy link that opens directly on the English tab">&#x1F517; English</button>
+      <button class="lang-copy-btn" type="button" data-lang="mr" title="मराठी टॅबवर थेट उघडणारी लिंक कॉपी करा">&#x1F517; मराठी</button>
+      <button class="lang-copy-btn" type="button" data-lang="hi" title="हिंदी टैब पर सीधे खुलने वाला लिंक कॉपी करें">&#x1F517; हिंदी</button>
+      <button class="lang-copy-btn urdu-font" type="button" data-lang="ur" title="اردو ٹیب پر براہ راست کھلنے والا لنک کاپی کریں">&#x1F517; اردو</button>
+      <button class="lang-copy-btn" type="button" data-lang="ru" title="Copy link that opens directly on the Roman Urdu tab">&#x1F517; Roman Urdu</button>
     </div>
 
     <div id="panel-en" class="lang-panel active" role="tabpanel" aria-labelledby="tab-en">
@@ -697,19 +706,80 @@
   document.addEventListener("DOMContentLoaded", function () {
     var tabs = document.querySelectorAll(".lang-tab");
     var panels = document.querySelectorAll(".lang-panel");
+    var validLangs = ["en", "mr", "hi", "ur", "ru"];
+
+    function activateLang(lang, scroll) {
+      if (validLangs.indexOf(lang) === -1) return;
+      tabs.forEach(function (t) {
+        var isMatch = t.getAttribute("data-lang") === lang;
+        t.classList.toggle("active", isMatch);
+        t.setAttribute("aria-selected", isMatch ? "true" : "false");
+      });
+      panels.forEach(function (p) {
+        p.classList.toggle("active", p.id === "panel-" + lang);
+      });
+      if (scroll) {
+        window.scrollTo({ top: document.querySelector(".lang-tabs").offsetTop - 10, behavior: "smooth" });
+      }
+    }
+
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
-        var lang = tab.getAttribute("data-lang");
-        tabs.forEach(function (t) {
-          t.classList.toggle("active", t === tab);
-          t.setAttribute("aria-selected", t === tab ? "true" : "false");
-        });
-        panels.forEach(function (p) {
-          p.classList.toggle("active", p.id === "panel-" + lang);
-        });
-        window.scrollTo({ top: document.querySelector(".lang-tabs").offsetTop - 10, behavior: "smooth" });
+        activateLang(tab.getAttribute("data-lang"), true);
+        var url = new URL(window.location.href);
+        url.searchParams.set("lang", tab.getAttribute("data-lang"));
+        window.history.replaceState(null, "", url);
       });
     });
+
+    // Open directly on a shared language, e.g. redevelopment-gr-2026-faq.html?lang=ur
+    var requestedLang = new URL(window.location.href).searchParams.get("lang");
+    if (requestedLang) {
+      activateLang(requestedLang, true);
+    }
+
+    // Copy-to-clipboard buttons that build a language-specific shareable link.
+    var copyButtons = document.querySelectorAll(".lang-copy-btn");
+    copyButtons.forEach(function (btn) {
+      var originalText = btn.textContent;
+      btn.addEventListener("click", function () {
+        var lang = btn.getAttribute("data-lang");
+        var url = new URL(window.location.href);
+        url.search = "";
+        url.searchParams.set("lang", lang);
+        var shareUrl = url.toString();
+
+        function showCopied() {
+          btn.classList.add("copied");
+          btn.textContent = "✓ Copied!";
+          setTimeout(function () {
+            btn.classList.remove("copied");
+            btn.textContent = originalText;
+          }, 1800);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl).then(showCopied).catch(function () {
+            fallbackCopy(shareUrl);
+            showCopied();
+          });
+        } else {
+          fallbackCopy(shareUrl);
+          showCopied();
+        }
+      });
+    });
+
+    function fallbackCopy(text) {
+      var temp = document.createElement("textarea");
+      temp.value = text;
+      temp.style.position = "fixed";
+      temp.style.left = "-9999px";
+      document.body.appendChild(temp);
+      temp.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(temp);
+    }
   });
 </script>
 </body>
