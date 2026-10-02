@@ -1112,3 +1112,27 @@ h1, h2, h3, .brand-name, .stat-num { font-family: var(--font-serif); letter-spac
 .utility-header .lang-line { display: inline; margin-right: 14px; font-size: 14px; }
 .utility-header .subtitle { margin-top: 4px; }
 .utility-header + section { padding-top: 28px; }
+
+.desk-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 10px 16px;
+  background: #f4f7f9;
+  border-bottom: 1px solid #e6ebf0;
+}
+.desk-nav a {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0b3d5c;
+  background: #fff;
+  border: 1px solid #d7e0e6;
+  border-radius: 999px;
+  padding: 6px 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.desk-nav a:hover, .desk-nav a.active { background: #0b3d5c; color: #fff; text-decoration: none; }
+.doc-list { margin: 8px 0 0; padding-left: 18px; }
+.doc-list li { margin: 6px 0; }
