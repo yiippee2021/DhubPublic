@@ -484,6 +484,60 @@ section { padding: 64px 0; }
   box-shadow: 0 8px 20px rgba(200, 149, 46, 0.10);
 }
 
+/* Language tabs (GR 2026 bilingual/multilingual Q&A page) */
+.lang-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--colour-bg);
+  padding: 12px 0 14px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--colour-border);
+}
+.lang-tab {
+  appearance: none;
+  border: 1px solid var(--colour-border);
+  background: var(--colour-surface);
+  color: var(--colour-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.lang-tab .flag { font-size: 15px; }
+.lang-tab:hover { border-color: var(--colour-accent); color: var(--colour-primary-dark); }
+.lang-tab.active {
+  background: linear-gradient(135deg, var(--colour-primary), var(--colour-primary-light));
+  border-color: var(--colour-primary);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.lang-panel { display: none; animation: lang-fade-in 0.25s ease; }
+.lang-panel.active { display: block; }
+.lang-panel[dir="rtl"] { text-align: right; }
+.lang-panel[dir="rtl"] h3 { text-align: right; }
+@keyframes lang-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 640px) {
+  .lang-tabs { gap: 5px; padding: 10px 0 12px; }
+  .lang-tab { font-size: 12.5px; padding: 8px 12px; flex: 1 1 auto; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lang-panel { animation: none; }
+}
+
 /* Contact page */
 .contact-grid {
   display: grid;
