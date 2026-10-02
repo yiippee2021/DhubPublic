@@ -526,6 +526,12 @@ section { padding: 64px 0; }
 .lang-panel.active { display: block; }
 .lang-panel[dir="rtl"] { text-align: right; }
 .lang-panel[dir="rtl"] h3 { text-align: right; }
+.urdu-font, .urdu-font h2, .urdu-font h3, .urdu-font p {
+  font-family: "Gulzar", "Noto Nastaliq Urdu", serif;
+}
+.urdu-font p { font-size: 17px; line-height: 2.1; }
+.urdu-font h3 { font-size: 19px; line-height: 1.9; }
+.lang-tab-ur .urdu-font { font-size: 16px; }
 @keyframes lang-fade-in {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
