@@ -179,18 +179,18 @@
 </section>
 
 
-<p class="faq-views" id="faq-views">100 views</p>
+<p class="faq-views" id="faq-views">100 page views</p>
 <script>
 (function () {
   var el = document.getElementById("faq-views");
-  fetch("/php/faq-views.php", { cache: "no-store" })
+  fetch("/php/faq-views.php?page=faq", { cache: "no-store" })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var n = parseInt(data.views, 10);
       if (!n || n < 100) n = 100;
-      el.textContent = n + " views";
+      el.textContent = n + " page views";
     })
-    .catch(function () { el.textContent = "100 views"; });
+    .catch(function () { el.textContent = "100 page views"; });
 })();
 </script>
 <style>
