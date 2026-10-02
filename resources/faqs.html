@@ -178,6 +178,25 @@
   </div>
 </section>
 
+
+<p class="faq-views" id="faq-views">100 views</p>
+<script>
+(function () {
+  var el = document.getElementById("faq-views");
+  fetch("/php/faq-views.php", { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var n = parseInt(data.views, 10);
+      if (!n || n < 100) n = 100;
+      el.textContent = n + " views";
+    })
+    .catch(function () { el.textContent = "100 views"; });
+})();
+</script>
+<style>
+.faq-views{text-align:center;color:#5b6b76;font-size:14px;margin:0 0 28px;letter-spacing:.02em}
+</style>
+
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
