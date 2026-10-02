@@ -1103,3 +1103,12 @@ h1, h2, h3, .brand-name, .stat-num { font-family: var(--font-serif); letter-spac
   white-space: nowrap;
 }
 .site-header .container { gap: 18px; }
+
+/* Compact header */
+.site-header .container { min-height: 56px; }
+.brand-logo-img { height: 40px; }
+.brand-text .brand-tagline { font-size: 13px; }
+.utility-header { padding: 16px 0 14px; }
+.utility-header .lang-line { display: inline; margin-right: 14px; font-size: 14px; }
+.utility-header .subtitle { margin-top: 4px; }
+.utility-header + section { padding-top: 28px; }
