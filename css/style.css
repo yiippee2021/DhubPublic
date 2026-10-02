@@ -1090,3 +1090,16 @@ h1, h2, h3, .brand-name, .stat-num { font-family: var(--font-serif); letter-spac
   .main-nav a.nav-cta { margin: 8px 0 0; display: inline-block; }
   .hero h1 { font-size: 32px; }
 }
+
+.brand { flex-shrink: 0; white-space: nowrap; }
+.brand-logo-img { height: 52px; width: auto; }
+.brand-text .brand-name { display: none; }
+.brand-text .brand-tagline {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b3d5c;
+  white-space: nowrap;
+}
+.site-header .container { gap: 18px; }
