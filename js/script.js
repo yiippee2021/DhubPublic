@@ -123,4 +123,51 @@ document.addEventListener("DOMContentLoaded", function () {
       revealObserver.observe(el);
     });
   }
+
+  // PDF viewer modal — keeps PDF links (e.g. the GR download buttons) inside the site
+  // instead of navigating away or handing off to an external app/viewer.
+  var pdfTriggers = document.querySelectorAll(".js-pdf-modal");
+  if (pdfTriggers.length) {
+    var overlay = document.createElement("div");
+    overlay.className = "pdf-modal-overlay";
+    overlay.innerHTML =
+      '<div class="pdf-modal" role="dialog" aria-modal="true" aria-label="Document viewer">' +
+      '<div class="pdf-modal-bar">' +
+      '<a class="pdf-modal-download" download>&#11015; Download</a>' +
+      '<button type="button" class="pdf-modal-close" aria-label="Close">&times;</button>' +
+      "</div>" +
+      '<iframe class="pdf-modal-frame" title="PDF document"></iframe>' +
+      "</div>";
+    document.body.appendChild(overlay);
+
+    var frame = overlay.querySelector(".pdf-modal-frame");
+    var downloadLink = overlay.querySelector(".pdf-modal-download");
+    var closeBtn = overlay.querySelector(".pdf-modal-close");
+
+    function openPdfModal(href) {
+      frame.src = href;
+      downloadLink.href = href;
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closePdfModal() {
+      overlay.classList.remove("open");
+      document.body.style.overflow = "";
+      frame.src = "";
+    }
+
+    pdfTriggers.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        openPdfModal(link.getAttribute("href"));
+      });
+    });
+    closeBtn.addEventListener("click", closePdfModal);
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) closePdfModal();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && overlay.classList.contains("open")) closePdfModal();
+    });
+  }
 });
