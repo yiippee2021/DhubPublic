@@ -124,42 +124,125 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // PDF viewer modal — keeps PDF links (e.g. the GR download buttons) inside the site
-  // instead of navigating away or handing off to an external app/viewer.
+  // PDF viewer modal: renders the document in-page with PDF.js from cdnjs. If it cannot load, shows a message and a download link. Nothing opens in a new window.
   var pdfTriggers = document.querySelectorAll(".js-pdf-modal");
   if (pdfTriggers.length) {
+    var PDFJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
     var overlay = document.createElement("div");
     overlay.className = "pdf-modal-overlay";
     overlay.innerHTML =
-      '<div class="pdf-modal" role="dialog" aria-modal="true" aria-label="Document viewer">' +
+      '<div class="pdf-modal" role="dialog" aria-modal="true" aria-labelledby="pdf-modal-title">' +
       '<div class="pdf-modal-bar">' +
-      '<a class="pdf-modal-download" download>&#11015; Download</a>' +
-      '<button type="button" class="pdf-modal-close" aria-label="Close">&times;</button>' +
+      '<span id="pdf-modal-title" class="pdf-modal-title">Government Resolution (PDF)</span>' +
+      '<a class="pdf-modal-download" download>Download</a>' +
+      '<button type="button" class="pdf-modal-close" aria-label="Close document">&times;</button>' +
       "</div>" +
-      '<iframe class="pdf-modal-frame" title="PDF document"></iframe>' +
+      '<div class="pdf-modal-body"></div>' +
       "</div>";
     document.body.appendChild(overlay);
-
-    var frame = overlay.querySelector(".pdf-modal-frame");
+    var modalBody = overlay.querySelector(".pdf-modal-body");
     var downloadLink = overlay.querySelector(".pdf-modal-download");
     var closeBtn = overlay.querySelector(".pdf-modal-close");
+    var returnFocus = null;
+    var session = 0;
 
-    function openPdfModal(href) {
-      frame.src = href;
+    function setStatus(text) {
+      modalBody.innerHTML = "";
+      var p = document.createElement("p");
+      p.className = "pdf-modal-status";
+      p.textContent = text;
+      modalBody.appendChild(p);
+    }
+
+    function loadPdfJs(callback) {
+      if (window.pdfjsLib) {
+        callback(true);
+        return;
+      }
+      var script = document.createElement("script");
+      script.src = PDFJS_BASE + "pdf.min.js";
+      script.onload = function () {
+        if (window.pdfjsLib) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + "pdf.worker.min.js";
+          callback(true);
+        } else {
+          callback(false);
+        }
+      };
+      script.onerror = function () { callback(false); };
+      document.head.appendChild(script);
+    }
+
+    function showFallback(id) {
+      if (id !== session) return;
+      setStatus("This preview could not be shown on this device. Use Download above to save the Government Resolution (PDF).");
+    }
+
+    function drawPage(pdf, number, width, id) {
+      return function () {
+        return pdf.getPage(number).then(function (page) {
+          if (id !== session) return;
+          var ratio = window.devicePixelRatio || 1;
+          var base = page.getViewport({ scale: 1 });
+          var viewport = page.getViewport({ scale: (width / base.width) * ratio });
+          var canvas = document.createElement("canvas");
+          canvas.className = "pdf-modal-page";
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+          canvas.style.width = Math.floor(viewport.width / ratio) + "px";
+          modalBody.appendChild(canvas);
+          return page.render({ canvasContext: canvas.getContext("2d"), viewport: viewport }).promise;
+        });
+      };
+    }
+
+    function renderPdf(url, id) {
+      loadPdfJs(function (loaded) {
+        if (id !== session) return;
+        if (!loaded) {
+          showFallback(id);
+          return;
+        }
+        window.pdfjsLib.getDocument(url).promise.then(function (pdf) {
+          if (id !== session) return;
+          modalBody.innerHTML = "";
+          var width = Math.max(240, Math.min(modalBody.clientWidth - 24, 900));
+          var chain = Promise.resolve();
+          for (var n = 1; n <= pdf.numPages; n++) {
+            chain = chain.then(drawPage(pdf, n, width, id));
+          }
+          return chain;
+        }).catch(function () {
+          showFallback(id);
+        });
+      });
+    }
+
+    function openPdfModal(href, trigger) {
+      session += 1;
+      var id = session;
+      returnFocus = trigger || null;
       downloadLink.href = href;
       overlay.classList.add("open");
       document.body.style.overflow = "hidden";
+      setStatus("Loading document…");
+      closeBtn.focus();
+      renderPdf(href, id);
     }
+
     function closePdfModal() {
+      session += 1;
       overlay.classList.remove("open");
       document.body.style.overflow = "";
-      frame.src = "";
+      modalBody.innerHTML = "";
+      if (returnFocus && returnFocus.focus) returnFocus.focus();
+      returnFocus = null;
     }
 
     pdfTriggers.forEach(function (link) {
       link.addEventListener("click", function (event) {
         event.preventDefault();
-        openPdfModal(link.getAttribute("href"));
+        openPdfModal(link.getAttribute("href"), link);
       });
     });
     closeBtn.addEventListener("click", closePdfModal);
@@ -167,7 +250,23 @@ document.addEventListener("DOMContentLoaded", function () {
       if (event.target === overlay) closePdfModal();
     });
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && overlay.classList.contains("open")) closePdfModal();
+      if (!overlay.classList.contains("open")) return;
+      if (event.key === "Escape") {
+        closePdfModal();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      var focusable = overlay.querySelectorAll("a[href], button");
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     });
   }
 });
