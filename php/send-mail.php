@@ -95,7 +95,7 @@ $body = implode("\n", $bodyLines);
 $fromAddress = 'no-reply@dhubgroup.in';
 $headers = [
     'From: D-HUB Group Website <' . $fromAddress . '>',
-    'Reply-To: ' . $name . ' <' . $email . '>',
+    'Reply-To: "' . str_replace('"', '', $name) . '" <' . $email . '>',
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
 ];
