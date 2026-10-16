@@ -17,7 +17,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gulzar&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css?v=13">
+<link rel="stylesheet" href="../css/style.css?v=17">
+<style>
+.desk-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;padding:12px 16px;background:#eef3f6;border-bottom:1px solid #d7e1e8}
+.desk-nav a{display:inline-block;font-size:13px;font-weight:650;line-height:1;color:#0b3d5c;background:#fff;border:1px solid #0b3d5c;border-radius:999px;padding:8px 14px;text-decoration:none;white-space:nowrap}
+.desk-nav a:hover{background:#0b3d5c;color:#fff;text-decoration:none}
+.desk-nav a.active{background:#c8952e;border-color:#c8952e;color:#1c1404;text-decoration:none}
+</style>
 </head>
 <body>
 
@@ -26,8 +32,7 @@
     <a class="brand" href="../index.html">
       <img class="brand-logo-img" src="../assets/logo.png" alt="D-HUB Group logo" width="92" height="46">
       <span class="brand-text">
-        <span class="brand-name">D-HUB Group</span>
-        <span class="brand-tagline">Project Management Consultancy &amp; Housing Redevelopment</span>
+        <span class="brand-tagline">Project Management Consultancy</span>
       </span>
     </a>
     <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
@@ -42,13 +47,18 @@
     </nav>
   </div>
 </header>
+<nav class="desk-nav" aria-label="Help desk">
+<a href="../help-desk.html">Help Desk</a>
+<a href="http://hptimes.news" target="_blank" rel="noopener">Weekly paper</a>
+<a href="../resources/sample-notices.html">Sample notices</a>
+<a href="../resources/checklists.html">Checklists</a>
+<a href="../resources/faqs.html">FAQs</a>
+<a href="../resources/redevelopment-gr-2026-faq.html" class="active">New GR</a>
+<a href="../fees.html">Fees</a>
+</nav>
 
 <section class="utility-header">
   <div class="container">
-    <a href="../index.html" class="back-button" onclick="goBack(event, '../index.html')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      Back to Home
-    </a>
     <h1>New Redevelopment GR, dated 30 September 2026 &mdash; 50 Questions &amp; Answers</h1>
     <p class="subtitle">Government Resolution No. सगृयो-2026/प्र.क्र.108/14-स, Cooperation, Marketing &amp; Textiles Department, Government of Maharashtra. Available in English, Marathi, Hindi, Urdu and Roman Urdu. General information only &mdash; not legal advice for your Society's specific matter. Last reviewed: 16 October 2026.</p>
     <div class="gr-download-wrap">
@@ -663,6 +673,25 @@
     <a href="../help-desk.html" class="btn btn-primary">Ask the Society Help Desk</a>
   </div>
 </section>
+
+
+<p class="faq-views" id="gr-views">1000 page views</p>
+<script>
+(function () {
+  var el = document.getElementById("gr-views");
+  fetch("/php/faq-views.php?page=gr", { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var n = parseInt(data.views, 10);
+      if (!n || n < 1000) n = 1000;
+      el.textContent = n + " page views";
+    })
+    .catch(function () { el.textContent = "1000 page views"; });
+})();
+</script>
+<style>
+.faq-views{text-align:center;color:#5b6b76;font-size:14px;margin:0 0 28px;letter-spacing:.02em}
+</style>
 
 <footer class="site-footer">
   <div class="container">
