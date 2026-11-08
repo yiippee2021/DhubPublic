@@ -62,10 +62,17 @@ $email   = clean((string)($data['email'] ?? ''));
 $phone   = clean((string)($data['phone'] ?? ''));
 $service = clean((string)($data['service'] ?? ''));
 $society = clean((string)($data['society'] ?? ''));
+$location = clean((string)($data['location'] ?? ''));
+$replyVia = clean((string)($data['reply_via'] ?? ''));
 $message = trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', (string)($data['message'] ?? '')));
 
 if ($name === '' || $email === '' || $message === '') {
     respond(false, 'Please complete all required fields.', 422);
+}
+
+if (!in_array($location, ['', 'Mira-Bhayandar', 'Thane', 'Mumbai', 'Other MMR', 'Outside MMR'], true)
+    || !in_array($replyVia, ['', 'WhatsApp', 'Phone call', 'E-mail'], true)) {
+    respond(false, 'Please choose a location and reply option from the list.', 422);
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -86,6 +93,8 @@ $bodyLines = [
     'Phone: ' . ($phone !== '' ? $phone : 'Not provided'),
     'Service of interest: ' . ($service !== '' ? $service : 'Not specified'),
     'Society / Organisation: ' . ($society !== '' ? $society : 'Not provided'),
+    'Location: ' . ($location !== '' ? $location : 'Not specified'),
+    'Preferred reply: ' . ($replyVia !== '' ? $replyVia : 'No preference'),
     '',
     'Message:',
     $message,

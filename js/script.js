@@ -57,7 +57,9 @@ document.addEventListener("DOMContentLoaded", function () {
         service: form.querySelector("#service").value,
         society: form.querySelector("#society").value.trim(),
         message: message,
-        website: form.querySelector("#website") ? form.querySelector("#website").value : ""
+        website: form.querySelector("#website") ? form.querySelector("#website").value : "",
+        location: form.querySelector("#location") ? form.querySelector("#location").value : "",
+        reply_via: form.querySelector("#reply-via") ? form.querySelector("#reply-via").value : ""
       };
 
       if (submitBtn) {
