@@ -4,6 +4,10 @@
 (function () {
   "use strict";
 
+  // Contact step switch. false: the figures open straight away; no contact details are asked for or sent.
+  // true: the contact step comes first (needs php/config.php on the server). Keep in step with
+  // DHUB_CONTACT_SAVING_ON in php/calculator-register.php.
+  var CONTACT_STEP_ON = false;
   var REGISTER_URL = "/php/calculator-register.php";
   var UNLOCK_KEY = "dhubCalcUnlocked";
   var MAX_RANGES = 3;
@@ -684,6 +688,21 @@
 
   // ---------- Set up ----------
 
+  // Shows the contact step only when CONTACT_STEP_ON is true. Otherwise the figures open straight away.
+  function applyContactMode() {
+    if (CONTACT_STEP_ON) {
+      $("calc-title").textContent = "Step 2 of 2: Enter the figures";
+      if (isUnlocked()) {
+        showCalculator(false);
+      } else {
+        $("gate").hidden = false;
+      }
+      return;
+    }
+    $("disclaimer-contacts").textContent = "At present D-HUB is not saving any contact details either. D-HUB is not saving any details of any data which is calculated and given out.";
+    showCalculator(false);
+  }
+
   function init() {
     $("gate-form").addEventListener("submit", onGateSubmit);
     $("calc-form").addEventListener("submit", onCalculate);
@@ -710,9 +729,7 @@
 
     addRange("");
     renumberRanges();
-    if (isUnlocked()) {
-      showCalculator(false);
-    }
+    applyContactMode();
   }
 
   init();

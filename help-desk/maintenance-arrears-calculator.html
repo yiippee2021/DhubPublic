@@ -125,7 +125,7 @@
     </div>
 
     <!-- Step 1: contact details. The calculator stays closed until these are saved. -->
-    <div class="calc-card" id="gate">
+    <div class="calc-card" id="gate" hidden>
       <h2>Step 1 of 2: Your contact details</h2>
       <p class="calc-lead">Before the calculator opens, give us a mobile number or an e-mail address, or both. We use them to keep in touch with you about our services.</p>
       <form id="gate-form" novalidate>
@@ -159,7 +159,7 @@
 
     <!-- Step 2: the figures. Shown once step 1 is saved. -->
     <div class="calc-card" id="calculator" hidden>
-      <h2 id="calc-title" tabindex="-1">Step 2 of 2: Enter the figures</h2>
+      <h2 id="calc-title" tabindex="-1">Enter the figures</h2>
       <p class="calc-lead">Type the figures from your society's records. Amounts are in rupees. For the PDF, type names in English letters.</p>
       <form id="calc-form" novalidate autocomplete="off">
         <fieldset class="calc-fieldset">
@@ -293,7 +293,7 @@
         <li>This is only a calculator. It works out figures from the information you enter, and from nothing else.</li>
         <li>The figures are not legal advice, not a demand notice and not legally binding. D-HUB has nothing to do with the figures, which come entirely from the information you enter. Your society's bye-laws decide the rate and method that apply, and D-HUB Project Management Consultancy is not responsible for any decision or dispute based on these figures.</li>
         <li>D-HUB does not save any record of this calculator, of the figures you enter, or of the statement it produces. The statement is generated at run time and flushed when you leave or refresh the page. To calculate again, enter the figures again.</li>
-        <li>D-HUB is only saving the contact details of the user. D-HUB is not saving any details of any data which is calculated and given out.</li>
+        <li id="disclaimer-contacts">D-HUB is only saving the contact details of the user. D-HUB is not saving any details of any data which is calculated and given out.</li>
         <li>For a more detailed report, more entries, or the premium version of this calculator, please contact D-HUB Project Management Consultancy.</li>
       </ul>
     </div>
@@ -362,6 +362,6 @@
   <a href="../contact.html">Book</a>
 </div>
 <script src="../js/script.js?v=2"></script>
-<script src="calculator.js?v=1" defer></script>
+<script src="calculator.js?v=2" defer></script>
 </body>
 </html>

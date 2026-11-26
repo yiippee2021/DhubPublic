@@ -12,6 +12,14 @@
 header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-store');
 
+/*
+ * Switch for the contact step. While this is false the endpoint saves nothing: it opens no database
+ * connection and answers success, so a visitor still running an older copy of the script is not blocked.
+ * Set it to true only after php/config.php is on the server and the database is ready, and keep it in step
+ * with CONTACT_STEP_ON in help-desk/calculator.js.
+ */
+const DHUB_CONTACT_SAVING_ON = false;
+
 function respond(bool $success, string $message, int $status = 200): void {
     http_response_code($status);
     echo json_encode(['success' => $success, 'message' => $message], JSON_UNESCAPED_UNICODE);
@@ -20,6 +28,11 @@ function respond(bool $success, string $message, int $status = 200): void {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Method not allowed.', 405);
+}
+
+// Contact saving is switched off: answer success without storing anything or touching the database.
+if (!DHUB_CONTACT_SAVING_ON) {
+    respond(true, 'Thank you. The calculator is now open.');
 }
 
 $configFile = __DIR__ . '/config.php';
