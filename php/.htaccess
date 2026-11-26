@@ -1,0 +1,4 @@
+# Block direct web access to the database settings file. The site's PHP can still read it.
+<Files "config.php">
+  Require all denied
+</Files>
