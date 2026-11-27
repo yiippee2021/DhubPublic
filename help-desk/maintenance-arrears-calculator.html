@@ -27,6 +27,7 @@
 .calc-card h2{margin-top:0;font-size:22px;color:var(--colour-primary-dark)}
 .calc-card h2:focus{outline:none}
 .calc-lead{color:var(--colour-muted);margin:0 0 18px}
+.calculator-views{text-align:center;color:var(--colour-muted);font-size:14px;margin:0 0 28px}
 .calc-hint{font-size:13px;color:var(--colour-muted);margin:6px 0 0}
 .calc-notice{font-size:13px;color:var(--colour-muted);background:var(--colour-bg);border-radius:10px;padding:12px 14px;margin:18px 0}
 .calc-notice a{color:var(--colour-primary);text-decoration:underline}
@@ -296,7 +297,7 @@
       <ul>
         <li>This is only a calculator. It works out figures from the information you enter, and from nothing else.</li>
         <li>The figures are not legal advice, not a demand notice and not legally binding. D-HUB has nothing to do with the figures, which come entirely from the information you enter. Your society's bye-laws decide the rate and method that apply, and D-HUB Project Management Consultancy is not responsible for any decision or dispute based on these figures.</li>
-        <li>D-HUB does not save any record of this calculator, of the figures you enter, or of the statement it produces. The statement is generated at run time and flushed when you leave or refresh the page. To calculate again, enter the figures again.</li>
+        <li>D-HUB does not save the figures you enter or the statement the calculator produces. The statement is generated at run time and flushed when you leave or refresh the page. To calculate again, enter the figures again.</li>
         <li id="disclaimer-contacts">D-HUB is only saving the contact details of the user. D-HUB is not saving any details of any data which is calculated and given out.</li>
         <li>For a more detailed report, more entries, or the premium version of this calculator, please contact D-HUB Project Management Consultancy.</li>
       </ul>
@@ -307,6 +308,8 @@
     </div>
   </div>
 </div>
+
+<p class="calculator-views" id="calculator-views">2,000 page views</p>
 
 </main>
 
@@ -367,5 +370,25 @@
 </div>
 <script src="../js/script.js?v=2"></script>
 <script src="calculator.js?v=3" defer></script>
+<script>
+(function () {
+  var counter = document.getElementById("calculator-views");
+  fetch("/php/faq-views.php?page=maintenance-calculator", { cache: "no-store" })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Page view count unavailable");
+      }
+      return response.json();
+    })
+    .then(function (data) {
+      if (data && Number.isSafeInteger(data.views) && data.views >= 2000) {
+        counter.textContent = data.views.toLocaleString("en-IN") + " page views";
+      }
+    })
+    .catch(function () {
+      // Leave the starting value visible when the endpoint is unavailable.
+    });
+})();
+</script>
 </body>
 </html>

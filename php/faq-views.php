@@ -5,6 +5,7 @@ header('Cache-Control: no-store');
 $pages = [
     'faq' => 100,
     'gr' => 1000,
+    'maintenance-calculator' => 2000,
 ];
 $page = $_GET['page'] ?? 'faq';
 if (!isset($pages[$page])) {
