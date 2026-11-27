@@ -199,6 +199,9 @@
           <button type="button" class="btn btn-outline-dark" id="add-range">Add another range</button>
         </fieldset>
 
+        <p class="calc-hint"><strong>How interest is calculated.</strong> Add monthly maintenance to the opening balance, then multiply by the annual interest rate and divide by 12. Round the interest to the nearest paisa and add it to the balance carried into the next month.</p>
+        <p class="calc-hint">For a month with a ₹1,000 opening balance, ₹500 monthly maintenance, and a 12% annual rate, interest is ₹15 and the closing balance is ₹1,515.</p>
+
         <div class="error-box" id="calc-errors" role="alert" tabindex="-1" hidden></div>
         <button type="submit" class="btn btn-primary" id="calc-submit">Calculate statement</button>
       </form>
@@ -265,6 +268,7 @@
       <div class="export-row">
         <button type="button" class="btn btn-primary" id="btn-excel">Download Excel (.xlsx)</button>
         <button type="button" class="btn btn-primary" id="btn-pdf">Download PDF</button>
+        <button type="button" class="btn btn-outline-dark" id="btn-edit-figures">Edit figures</button>
         <button type="button" class="btn btn-outline-dark" id="btn-recalc">Start a new calculation</button>
       </div>
       <p class="form-status" id="export-status" role="status" aria-live="polite"></p>
@@ -362,6 +366,6 @@
   <a href="../contact.html">Book</a>
 </div>
 <script src="../js/script.js?v=2"></script>
-<script src="calculator.js?v=2" defer></script>
+<script src="calculator.js?v=3" defer></script>
 </body>
 </html>

@@ -12,6 +12,9 @@
   var UNLOCK_KEY = "dhubCalcUnlocked";
   var MAX_RANGES = 3;
   var MAX_MONTHS = 360;
+  // Excel preserves 15 significant digits, including the two decimal places for paise.
+  var MAX_BALANCE_PAISE = 999999999999999;
+  var INTEREST_METHOD = "Monthly interest = (opening balance + monthly maintenance) x annual rate / 12. Interest is rounded to the nearest paisa and carried into the next month.";
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var LIBRARIES = {
     xlsx: "../assets/vendor/xlsx.full.min.js",
@@ -348,13 +351,20 @@
   function buildStatement(input) {
     var rows = [];
     var opening = input.pending;
-    input.ranges.forEach(function (range, r) {
+    for (var r = 0; r < input.ranges.length; r++) {
+      var range = input.ranges[r];
       // Rate in hundredths of a per cent. Interest in paise = base x rate / 1200 = base x rate100 / 120000, rounded half up.
       var rate100 = Math.round(range.rate * 100);
       for (var m = range.from; m <= range.to; m++) {
         var base = opening + input.monthly;
-        var interest = Math.floor((base * rate100 + 60000) / 120000);
+        // Split the division so the intermediate product stays within the safe integer range.
+        var whole = Math.floor(base / 120000);
+        var remainder = base % 120000;
+        var interest = whole * rate100 + Math.floor((remainder * rate100 + 60000) / 120000);
         var closing = base + interest;
+        if (closing > MAX_BALANCE_PAISE) {
+          return null;
+        }
         rows.push({
           no: rows.length + 1,
           month: monthLabel(m),
@@ -367,7 +377,7 @@
         });
         opening = closing;
       }
-    });
+    }
     var totals = rows.reduce(function (sum, row) {
       sum.maintenance += row.maintenance;
       sum.interest += row.interest;
@@ -493,6 +503,13 @@
     event.preventDefault();
     var input = readForm();
     var box = $("calc-errors");
+    if (!input.errors.length) {
+      pendingStatement = buildStatement(input);
+      if (!pendingStatement) {
+        input.errors.push("The balance exceeds the statement limit of ₹ " + formatAmount(MAX_BALANCE_PAISE) +
+          ". Check the amounts and interest rates, or shorten the period.");
+      }
+    }
     if (input.errors.length) {
       box.textContent = "";
       box.appendChild(el("p", { text: "Please fix these before we calculate:" }));
@@ -506,7 +523,6 @@
       return;
     }
     box.hidden = true;
-    pendingStatement = buildStatement(input);
     openDisclaimer();
   }
 
@@ -516,6 +532,8 @@
       return;
     }
     renderStatement(pendingStatement);
+    pendingStatement = null;
+    $("calculator").hidden = true;
     $("results").hidden = false;
     setStatus($("export-status"), "", "");
     $("results-title").focus();
@@ -528,12 +546,22 @@
     $("statement").querySelector("tfoot").textContent = "";
   }
 
-  // Clears the statement and the figures from the page, as the disclaimer says. Nothing is kept.
-  function onRecalculate() {
+  function returnToForm() {
     shownStatement = null;
     pendingStatement = null;
     clearStatement();
     $("results").hidden = true;
+    $("calculator").hidden = false;
+    setStatus($("export-status"), "", "");
+  }
+
+  function onEditFigures() {
+    returnToForm();
+    $("calc-title").focus();
+  }
+
+  function onRecalculate() {
+    returnToForm();
     rangeCards().forEach(function (card) {
       card.parentNode.removeChild(card);
     });
@@ -541,7 +569,6 @@
     addRange("");
     renumberRanges();
     $("calc-errors").hidden = true;
-    setStatus($("export-status"), "", "");
     $("calc-form").scrollIntoView({ block: "start" });
     $("member-name").focus();
   }
@@ -576,6 +603,8 @@
     money.push([push(["Initial opening balance (pending maintenance), Rs", rupees(stmt.pending)]), 1]);
     money.push([push(["Monthly maintenance, Rs", rupees(stmt.monthly)]), 1]);
     push([]);
+    push(["Interest method", INTEREST_METHOD]);
+    push([]);
     push(["Range", "From", "To", "Months", "Rate (% a year)"]);
     stmt.ranges.forEach(function (range, i) {
       push(["Range " + (i + 1), monthLabel(range.from), monthLabel(range.to), range.to - range.from + 1, range.rate]);
@@ -601,6 +630,9 @@
     var status = $("export-status");
     setStatus(status, "Preparing your Excel file…", "");
     loadLibrary(LIBRARIES.xlsx).then(function () {
+      if (shownStatement !== stmt) {
+        return;
+      }
       var XLSX = window.XLSX;
       var sheet = excelSheet(stmt);
       var ws = XLSX.utils.aoa_to_sheet(sheet.rows);
@@ -616,7 +648,9 @@
       XLSX.writeFile(wb, fileName(stmt, "xlsx"));
       setStatus(status, "Your Excel file is ready.", "success");
     }).catch(function () {
-      setStatus(status, "The Excel file could not be prepared. Please try again.", "error");
+      if (shownStatement === stmt) {
+        setStatus(status, "The Excel file could not be prepared. Please try again.", "error");
+      }
     });
   }
 
@@ -626,6 +660,9 @@
     loadLibrary(LIBRARIES.jspdf).then(function () {
       return loadLibrary(LIBRARIES.autotable);
     }).then(function () {
+      if (shownStatement !== stmt) {
+        return;
+      }
       var jsPDF = window.jspdf.jsPDF;
       var doc = new jsPDF({ unit: "mm", format: "a4" });
       var header = [
@@ -646,8 +683,12 @@
       doc.text("Initial opening balance (pending maintenance): Rs " + formatAmount(stmt.pending), 14, 49);
       doc.text("Monthly maintenance: Rs " + formatAmount(stmt.monthly), 14, 55);
 
+      doc.setFontSize(9);
+      var methodLines = doc.splitTextToSize(INTEREST_METHOD, 182);
+      doc.text(methodLines, 14, 61);
+
       doc.autoTable({
-        startY: 61,
+        startY: 65 + methodLines.length * 4,
         head: [["Range", "From", "To", "Months", "Rate (% a year)"]],
         body: stmt.ranges.map(function (range, i) {
           return ["Range " + (i + 1), monthLabel(range.from), monthLabel(range.to), String(range.to - range.from + 1), String(range.rate)];
@@ -682,7 +723,9 @@
         setStatus(status, "Your PDF is ready.", "success");
       }
     }).catch(function () {
-      setStatus(status, "The PDF could not be prepared. Please try again.", "error");
+      if (shownStatement === stmt) {
+        setStatus(status, "The PDF could not be prepared. Please try again.", "error");
+      }
     });
   }
 
@@ -715,6 +758,7 @@
         trapFocus(event);
       }
     });
+    $("btn-edit-figures").addEventListener("click", onEditFigures);
     $("btn-recalc").addEventListener("click", onRecalculate);
     $("btn-excel").addEventListener("click", function () {
       if (shownStatement) {
